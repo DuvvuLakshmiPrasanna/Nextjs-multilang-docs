@@ -1,0 +1,289 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Documentation Portal API",
+    "description": "API reference for the Documentation Portal",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/api/docs": {
+      "get": {
+        "summary": "Get all documentation",
+        "tags": ["Documentation"],
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Language locale (en, es, fr, de)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["en", "es", "fr", "de"]
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "description": "Documentation version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["v1", "v2", "v3"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of documentation pages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocPage"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/docs/{slug}": {
+      "get": {
+        "summary": "Get a specific documentation page",
+        "tags": ["Documentation"],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Page slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Language locale",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "description": "Documentation version",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Documentation page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocPage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Page not found"
+          }
+        }
+      }
+    },
+    "/api/search": {
+      "get": {
+        "summary": "Search documentation",
+        "tags": ["Search"],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Search query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Language locale",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SearchResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/versions": {
+      "get": {
+        "summary": "Get available documentation versions",
+        "tags": ["Documentation"],
+        "responses": {
+          "200": {
+            "description": "List of versions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/languages": {
+      "get": {
+        "summary": "Get supported languages",
+        "tags": ["Documentation"],
+        "responses": {
+          "200": {
+            "description": "List of supported languages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/feedback": {
+      "post": {
+        "summary": "Submit feedback",
+        "tags": ["Feedback"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackSubmission"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Feedback submitted successfully"
+          },
+          "400": {
+            "description": "Invalid feedback submission"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DocPage": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "Page slug"
+          },
+          "title": {
+            "type": "string",
+            "description": "Page title"
+          },
+          "content": {
+            "type": "string",
+            "description": "Page content (markdown)"
+          },
+          "locale": {
+            "type": "string",
+            "description": "Language locale"
+          },
+          "version": {
+            "type": "string",
+            "description": "Documentation version"
+          }
+        }
+      },
+      "SearchResult": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Page title"
+          },
+          "slug": {
+            "type": "string",
+            "description": "Page slug"
+          },
+          "excerpt": {
+            "type": "string",
+            "description": "Page excerpt"
+          },
+          "version": {
+            "type": "string",
+            "description": "Documentation version"
+          }
+        }
+      },
+      "FeedbackSubmission": {
+        "type": "object",
+        "properties": {
+          "feedback": {
+            "type": "string",
+            "description": "User feedback text"
+          },
+          "page": {
+            "type": "string",
+            "description": "Current page URL"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Submission timestamp"
+          }
+        },
+        "required": ["feedback"]
+      }
+    }
+  }
+}
